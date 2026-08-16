@@ -696,45 +696,54 @@
     }
 
     function ejecutarLogin() {
-      const id = document.getElementById('loginId').value.trim();
-      const pass = document.getElementById('loginPass').value.trim();
-      const btn = document.getElementById('btnLogin');
+  const id = document.getElementById('loginId').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const btn = document.getElementById('btnLogin');
 
-      if (!id || !pass) {
-        mostrarAlerta('alertLogin', 'Por favor ingresa ID y contraseña.');
-        return;
-      }
+  if (!id || !pass) {
+    mostrarAlerta('alertLogin', 'Por favor ingresa ID y contraseña.');
+    return;
+  }
 
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Validando...';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Validando...';
 
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify({ accion: "login", id: id, pass: pass })
-      })
-      .then(res => res.json())
-      .then(response => {
-        btn.disabled = false;
-        btn.innerHTML = '<span>Iniciar Sesión</span>';
-
-        if (response && response.success) {
-          estudianteSesion = response.estudiante;
-          if (estudianteSesion.esPasswordInicial) {
-            mostrarPantalla('viewCambioObligatorio');
-          } else {
-            cargarDashboard();
-          }
-        } else {
-          mostrarAlerta('alertLogin', (response && response.message) ? response.message : "Error al iniciar sesión.");
-        }
-      })
-      .catch(err => {
-        btn.disabled = false;
-        btn.innerHTML = '<span>Iniciar Sesión</span>';
-        mostrarAlerta('alertLogin', 'Error de conexión con el servidor.');
-      });
+  fetch(API_URL, {
+    method: "POST",
+    mode: "cors",
+    redirect: "follow",
+    headers: {
+      "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({ accion: "login", id: id, pass: pass })
+  })
+  .then(res => {
+    if (!res.ok) {
+      throw new Error("Respuesta de red no OK: " + res.status);
     }
+    return res.json();
+  })
+  .then(response => {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Iniciar Sesión</span>';
 
+    if (response && response.success) {
+      estudianteSesion = response.estudiante;
+      if (estudianteSesion.esPasswordInicial) {
+        mostrarPantalla('viewCambioObligatorio');
+      } else {
+        cargarDashboard();
+      }
+    } else {
+      mostrarAlerta('alertLogin', (response && response.message) ? response.message : "Credenciales incorrectas.");
+    }
+  })
+  .catch(err => {
+    btn.disabled = false;
+    btn.innerHTML = '<span>Iniciar Sesión</span>';
+    mostrarAlerta('alertLogin', 'Error al conectar con el servidor: ' + err.message);
+  });
+}
     function ejecutarCambioObligatorio() {
       const pNueva = document.getElementById('passNuevaObj').value.trim();
       const pConfirm = document.getElementById('passConfirmObj').value.trim();
