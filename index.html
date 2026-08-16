@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Revisión de Notas | Media Técnica Desarrollo de Software</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-principal: #0A0A0A;
+      --bg-tarjeta: #141414;
+      --bg-input: #1F1F1F;
+      --rojo-primario: #C81E33;
+      --rojo-hover: #A01828;
+      --rojo-subtil: rgba(200, 30, 51, 0.12);
+      --borde: #2A2A2A;
+      --borde-focus: #C81E33;
+      --texto-blanco: #F5F5F5;
+      --texto-gris: #A0A0A0;
+      --texto-apagado: #666666;
+      --verde-exito: #0F7A6C;
+      --verde-bg: rgba(15, 122, 108, 0.15);
+      --fuente-base: 'Inter', system-ui, -apple-system, sans-serif;
+      --fuente-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--fuente-base);
+      background-color: var(--bg-principal);
+      color: var(--texto-blanco);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* Encabezado Principal */
+    header.header-bar {
+      background-color: #000000;
+      border-bottom: 2px solid var(--rojo-primario);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand img {
+      height: 48px;
+      width: auto;
+      background: #FFFFFF;
+      padding: 4px;
+      border-radius: 6px;
+    }
+
+    .brand-info h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--texto-blanco);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-info span {
+      font-size: 0.8rem;
+      color: var(--rojo-primario);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .user-badge {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-tarjeta);
+      border: 1px solid var(--borde);
+      padding: 6px 14px;
+      border-radius: 8px;
+    }
+
+    .user-badge span {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--rojo-primario);
+      color: var(--rojo-primario);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:hover {
+      background: var(--rojo-primario);
+      color: var(--texto-blanco);
+    }
+
+    /* Contenedor Principal */
+    main.container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 30px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+
+    /* Tarjetas y Pantallas */
+    .view-card {
+      background-color: var(--bg-tarjeta);
+      border: 1px solid var(--borde);
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .auth-wrapper {
+      max-width: 440px;
+      margin: 40px auto;
+    }
+
+    .auth-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      text-align: center;
+      color: var(--texto-blanco);
+    }
+
+    .auth-subtitle {
+      font-size: 0.88rem;
+      color: var(--texto-gris);
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* Formularios e Inputs */
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--texto-gris);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .form-control {
+      width: 100%;
+      background-color: var(--bg-input);
+      border: 1px solid var(--borde);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: var(--texto-blanco);
+      font-family: var(--fuente-base);
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--borde-focus);
+      box-shadow: 0 0 0 3px rgba(200, 30, 51, 0.2);
+    }
+
+    /* Botones */
+    .btn {
+      width: 100%;
+      background-color: var(--rojo-primario);
+      color: var(--texto-blanco);
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background-color: var(--rojo-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.99);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--borde);
+      color: var(--texto-gris);
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--bg-input);
+      color: var(--texto-blanco);
+    }
+
+    .auth-links {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .auth-links a {
+      color: var(--rojo-primario);
+      font-size: 0.85rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-links a:hover {
+      text-decoration: underline;
+    }
+
+    /* Reglas de Contraseña (Callout) */
+    .rules-box {
+      background-color: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--rojo-primario);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 14px;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      color: var(--texto-gris);
+    }
+
+    .rules-box ul {
+      list-style-type: disc;
+      margin-left: 18px;
+      margin-top: 6px;
+    }
+
+    .rules-box li {
+      margin-bottom: 2px;
+    }
+
+    /* Alertas y Mensajes */
+    .alert {
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: none;
+    }
+
+    .alert-danger {
+      background-color: rgba(200, 30, 51, 0.15);
+      border: 1px solid var(--rojo-primario);
+      color: #FF8080;
+    }
+
+    .alert-success {
+      background-color: var(--verde-bg);
+      border: 1px solid var(--verde-exito);
+      color: #80E0D0;
+    }
+
+    /* Panel de Notas (Dashboard) */
+    .dashboard-header {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .info-card {
+      background-color: var(--bg-input);
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      padding: 16px 18px;
+    }
+
+    .info-card span.label {
+      display: block;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: var(--texto-gris);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .info-card span.value {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--texto-blanco);
+      margin-top: 4px;
+    }
+
+    .promedio-card {
+      background: linear-gradient(135deg, rgba(200, 30, 51, 0.2) 0%, var(--bg-input) 100%);
+      border: 1px solid var(--rojo-primario);
+    }
+
+    .promedio-card span.value {
+      font-size: 1.8rem;
+      font-family: var(--fuente-mono);
+      color: #FFFFFF;
+    }
+
+    /* Tabla de Notas */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 18px;
+      background-color: var(--rojo-primario);
+      border-radius: 2px;
+    }
+
+    .grid-notas {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .nota-card {
+      background-color: var(--bg-input);
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      padding: 16px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .nota-card:hover {
+      border-color: rgba(200, 30, 51, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .nota-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--borde);
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .nota-numero {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--texto-gris);
+      text-transform: uppercase;
+    }
+
+    .nota-porcentaje {
+      font-size: 0.75rem;
+      font-family: var(--fuente-mono);
+      background-color: var(--rojo-subtil);
+      color: var(--rojo-primario);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .nota-body {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .nota-valor {
+      font-family: var(--fuente-mono);
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .nota-valor.baja { color: #FF5555; }
+    .nota-valor.media { color: #FFB86C; }
+    .nota-valor.alta { color: #50FA7B; }
+
+    .nota-obs {
+      font-size: 0.8rem;
+      color: var(--texto-gris);
+      margin-top: 10px;
+      font-style: italic;
+      line-height: 1.3;
+    }
+
+    /* Spinner de carga */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #FFFFFF;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--borde);
+      padding: 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--texto-apagado);
+      background-color: #000000;
+    }
+
+    @media (max-width: 600px) {
+      .view-card { padding: 20px; }
+      .brand-info h1 { font-size: 0.9rem; }
+      .dashboard-header { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ENCABEZADO -->
+  <header class="header-bar">
+    <div class="header-content">
+      <div class="brand">
+        <!-- Logo codificado en Base64 -->
+        <img src="data:image/png;base64,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" alt="Logo IE María de los Ángeles Cano">
+        <div class="brand-info">
+          <h1>I. E. María de los Ángeles Cano Márquez</h1>
+          <span>Media Técnica en Desarrollo de Software</span>
+        </div>
+      </div>
+
+      <div id="userBadge" class="user-badge">
+        <span id="userBadgeName">Estudiante</span>
+        <button class="btn-logout" onclick="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="container">
+
+    <!-- PANTALLA 1: LOGIN -->
+    <div id="viewLogin" class="auth-wrapper">
+      <div class="view-card">
+        <h2 class="auth-title">Acceso a Notas</h2>
+        <p class="auth-subtitle">Ingresa tu documento de identidad y contraseña</p>
+
+        <div id="alertLogin" class="alert alert-danger"></div>
+
+        <form id="formLogin" onsubmit="event.preventDefault(); ejecutarLogin();">
+          <div class="form-group">
+            <label for="loginId">ID / Documento</label>
+            <input type="text" id="loginId" class="form-control" placeholder="Ej. 1017000111" required autocomplete="username">
+          </div>
+
+          <div class="form-group">
+            <label for="loginPass">Contraseña</label>
+            <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+
+          <button type="submit" id="btnLogin" class="btn">
+            <span>Iniciar Sesión</span>
+          </button>
+        </form>
+
+        <div class="auth-links">
+          <a href="#" onclick="mostrarPantalla('viewSolicitarCode')">¿Olvidaste tu contraseña?</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA 2: CAMBIO OBLIGATORIO DE CONTRASEÑA -->
+    <div id="viewCambioObligatorio" class="auth-wrapper" style="display: none;">
+      <div class="view-card">
+        <h2 class="auth-title">Actualización Requerida</h2>
+        <p class="auth-subtitle">Es tu primer ingreso o estás usando la contraseña inicial. Debes crear una nueva contraseña.</p>
+
+        <div class="rules-box">
+          <strong>Requisitos de la nueva contraseña:</strong>
+          <ul>
+            <li>Longitud entre 4 y 10 caracteres.</li>
+            <li>No se permiten números consecutivos (ej. 1234, 4321).</li>
+            <li>Reconoce mayúsculas y minúsculas.</li>
+            <li>No se permiten caracteres especiales (!@#$%^&*).</li>
+          </ul>
+        </div>
+
+        <div id="alertCambio" class="alert alert-danger"></div>
+
+        <form id="formCambioObligatorio" onsubmit="event.preventDefault(); ejecutarCambioObligatorio();">
+          <div class="form-group">
+            <label for="passNuevaObj">Nueva Contraseña</label>
+            <input type="password" id="passNuevaObj" class="form-control" placeholder="Ej. Soft2026" maxlength="10" required>
+          </div>
+
+          <div class="form-group">
+            <label for="passConfirmObj">Confirmar Contraseña</label>
+            <input type="password" id="passConfirmObj" class="form-control" placeholder="Ej. Soft2026" maxlength="10" required>
+          </div>
+
+          <button type="submit" id="btnCambioObj" class="btn">
+            <span>Guardar Nueva Contraseña</span>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PANTALLA 3: SOLICITAR CÓDIGO DE RECUPERACIÓN -->
+    <div id="viewSolicitarCode" class="auth-wrapper" style="display: none;">
+      <div class="view-card">
+        <h2 class="auth-title">Recuperación</h2>
+        <p class="auth-subtitle">Ingresa tu ID para enviar un código de 6 dígitos a tu correo institucional.</p>
+
+        <div id="alertSolicitar" class="alert alert-danger"></div>
+
+        <form id="formSolicitar" onsubmit="event.preventDefault(); ejecutarSolicitarCodigo();">
+          <div class="form-group">
+            <label for="solicitarId">ID / Documento</label>
+            <input type="text" id="solicitarId" class="form-control" placeholder="Ej. 1017000111" required>
+          </div>
+
+          <button type="submit" id="btnSolicitar" class="btn">
+            <span>Enviar Código a Mi Correo</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary" onclick="mostrarPantalla('viewLogin')">
+            Volver al Inicio
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PANTALLA 4: RESTABLECER CON CÓDIGO -->
+    <div id="viewRestablecerCode" class="auth-wrapper" style="display: none;">
+      <div class="view-card">
+        <h2 class="auth-title">Ingresar Código</h2>
+        <p class="auth-subtitle">Revisa tu correo institucional e ingresa el código enviado.</p>
+
+        <div class="rules-box">
+          <strong>Requisitos de la nueva contraseña:</strong>
+          <ul>
+            <li>Entre 4 y 10 caracteres alfanuméricos.</li>
+            <li>Sin números consecutivos ni caracteres especiales.</li>
+          </ul>
+        </div>
+
+        <div id="alertRestablecer" class="alert alert-danger"></div>
+
+        <form id="formRestablecer" onsubmit="event.preventDefault(); ejecutarRestablecer();">
+          <div class="form-group">
+            <label for="restCodigo">Código de Verificación (6 dígitos)</label>
+            <input type="text" id="restCodigo" class="form-control" style="font-family: var(--fuente-mono); font-size: 1.2rem; letter-spacing: 0.2em; text-align: center;" maxlength="6" placeholder="123456" required>
+          </div>
+
+          <div class="form-group">
+            <label for="restPassNueva">Nueva Contraseña</label>
+            <input type="password" id="restPassNueva" class="form-control" maxlength="10" required>
+          </div>
+
+          <div class="form-group">
+            <label for="restPassConfirm">Confirmar Nueva Contraseña</label>
+            <input type="password" id="restPassConfirm" class="form-control" maxlength="10" required>
+          </div>
+
+          <button type="submit" id="btnRestablecer" class="btn">
+            <span>Restablecer Contraseña</span>
+          </button>
+
+          <button type="button" class="btn btn-secondary" onclick="mostrarPantalla('viewLogin')">
+            Cancelar
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- PANTALLA 5: DASHBOARD DE NOTAS -->
+    <div id="viewDashboard" class="view-card" style="display: none;">
+      
+      <!-- Ficha de Datos del Estudiante -->
+      <div class="dashboard-header">
+        <div class="info-card">
+          <span class="label">Estudiante</span>
+          <span class="value" id="dashNombre">-</span>
+        </div>
+        <div class="info-card">
+          <span class="label">Grado / Grupo</span>
+          <span class="value" id="dashGrado">-</span>
+        </div>
+        <div class="info-card">
+          <span class="label">Proyecto PIA</span>
+          <span class="value" id="dashProyecto">-</span>
+        </div>
+        <div class="info-card promedio-card">
+          <span class="label" style="color: var(--texto-blanco);">Promedio Acumulado</span>
+          <span class="value" id="dashPromedio">0.0</span>
+        </div>
+      </div>
+
+      <!-- Cuadrícula de Calificaciones -->
+      <h3 class="section-title">Registro de Calificaciones y Observaciones</h3>
+      <div class="grid-notas" id="containerNotas">
+        <!-- Generado dinámicamente -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- PIE DE PÁGINA -->
+  <footer>
+    <p>Institución Educativa María de los Ángeles Cano Márquez &copy; 2026 | Media Técnica en Desarrollo de Software</p>
+  </footer>
+
+  <!-- LÓGICA JAVASCRIPT FRONTEND -->
+  <script>
+    // Estado global de la sesión
+    let estudianteSesion = null;
+    let idRecuperacionTemporal = "";
+
+    /**
+     * Muestra la pantalla correspondiente y oculta las demás
+     */
+    function mostrarPantalla(idPantalla) {
+      const pantallas = ['viewLogin', 'viewCambioObligatorio', 'viewSolicitarCode', 'viewRestablecerCode', 'viewDashboard'];
+      pantallas.forEach(id => {
+        document.getElementById(id).style.display = (id === idPantalla) ? 'block' : 'none';
+      });
+
+      // Ocultar alertas al cambiar de pantalla
+      document.querySelectorAll('.alert').forEach(a => a.style.display = 'none');
+    }
+
+    /**
+     * Muestra mensajes de alerta en los contenedores específicos
+     */
+    function mostrarAlerta(idAlert, mensaje, esExito = false) {
+      const el = document.getElementById(idAlert);
+      el.className = 'alert ' + (esExito ? 'alert-success' : 'alert-danger');
+      el.textContent = mensaje;
+      el.style.display = 'block';
+    }
+
+    /**
+     * Validador de contraseña según reglas de negocio:
+     * - 4 a 10 caracteres.
+     * - Alfanumérico (mayúsculas/minúsculas/números).
+     * - Sin caracteres especiales.
+     * - Sin números consecutivos (ej. 1234, 4321).
+     */
+    function validarPasswordReglas(pass) {
+      if (pass.length < 4 || pass.length > 10) {
+        return { valido: false, mensaje: "La contraseña debe tener entre 4 y 10 caracteres." };
+      }
+
+      // No caracteres especiales
+      const regexAlfanumerico = /^[a-zA-Z0-9]+$/;
+      if (!regexAlfanumerico.test(pass)) {
+        return { valido: false, mensaje: "La contraseña solo debe contener letras y números (sin caracteres especiales)." };
+      }
+
+      // Detectar secuencias numéricas de 3 o más números consecutivos (ascendentes o descendentes)
+      for (let i = 0; i < pass.length - 2; i++) {
+        const c1 = pass.charCodeAt(i);
+        const c2 = pass.charCodeAt(i + 1);
+        const c3 = pass.charCodeAt(i + 2);
+
+        // Verificar si los tres son dígitos
+        if (c1 >= 48 && c1 <= 57 && c2 >= 48 && c2 <= 57 && c3 >= 48 && c3 <= 57) {
+          if ((c2 === c1 + 1 && c3 === c2 + 1) || (c2 === c1 - 1 && c3 === c2 - 1)) {
+            return { valido: false, mensaje: "No se permiten números consecutivos (ej. 123, 321)." };
+          }
+        }
+      }
+
+      return { valido: true };
+    }
+
+    /**
+     * Ejecuta el inicio de sesión
+     */
+    function ejecutarLogin() {
+  const id = document.getElementById('loginId').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const btn = document.getElementById('btnLogin');
+
+  if (!id || !pass) {
+    mostrarAlerta('alertLogin', 'Por favor ingresa ID y contraseña.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Validando...';
+
+  google.script.run
+    .withSuccessHandler(function(response) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Iniciar Sesión</span>';
+
+      if (response && response.success) {
+        estudianteSesion = response.estudiante;
+        if (estudianteSesion.esPasswordInicial) {
+          mostrarPantalla('viewCambioObligatorio');
+        } else {
+          cargarDashboard();
+        }
+      } else {
+        mostrarAlerta('alertLogin', (response && response.message) ? response.message : "Respuesta no válida del servidor.");
+      }
+    })
+    .withFailureHandler(function(err) {
+      btn.disabled = false;
+      btn.innerHTML = '<span>Iniciar Sesión</span>';
+      mostrarAlerta('alertLogin', 'Error de ejecución en servidor: ' + (err.message || err.toString()));
+    })
+    .loginEstudiante(id, pass);
+}
+
+    /**
+     * Ejecuta el cambio obligatorio de contraseña en el primer ingreso
+     */
+    function ejecutarCambioObligatorio() {
+      const pNueva = document.getElementById('passNuevaObj').value.trim();
+      const pConfirm = document.getElementById('passConfirmObj').value.trim();
+      const btn = document.getElementById('btnCambioObj');
+
+      if (pNueva !== pConfirm) {
+        mostrarAlerta('alertCambio', 'Las contraseñas no coinciden.');
+        return;
+      }
+
+      const validacion = validarPasswordReglas(pNueva);
+      if (!validacion.valido) {
+        mostrarAlerta('alertCambio', validacion.mensaje);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Actualizando...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Guardar Nueva Contraseña</span>';
+
+          if (response.success) {
+            alert('Contraseña actualizada con éxito.');
+            estudianteSesion.esPasswordInicial = false;
+            cargarDashboard();
+          } else {
+            mostrarAlerta('alertCambio', response.message);
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Guardar Nueva Contraseña</span>';
+          mostrarAlerta('alertCambio', 'Error en el servidor: ' + err.message);
+        })
+        .cambiarPassword(estudianteSesion.id, pNueva);
+    }
+
+    /**
+     * Solicita envío de código de verificación
+     */
+    function ejecutarSolicitarCodigo() {
+      const id = document.getElementById('solicitarId').value.trim();
+      const btn = document.getElementById('btnSolicitar');
+
+      if (!id) {
+        mostrarAlerta('alertSolicitar', 'Por favor ingresa tu ID.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Enviando correo...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Enviar Código a Mi Correo</span>';
+
+          if (response.success) {
+            idRecuperacionTemporal = id;
+            alert(response.message);
+            mostrarPantalla('viewRestablecerCode');
+          } else {
+            mostrarAlerta('alertSolicitar', response.message);
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Enviar Código a Mi Correo</span>';
+          mostrarAlerta('alertSolicitar', 'Error en el servidor: ' + err.message);
+        })
+        .solicitarCodigoRecuperacion(id);
+    }
+
+    /**
+     * Valida el código e ingresa la nueva contraseña
+     */
+    function ejecutarRestablecer() {
+      const codigo = document.getElementById('restCodigo').value.trim();
+      const pNueva = document.getElementById('restPassNueva').value.trim();
+      const pConfirm = document.getElementById('restPassConfirm').value.trim();
+      const btn = document.getElementById('btnRestablecer');
+
+      if (!codigo || codigo.length !== 6) {
+        mostrarAlerta('alertRestablecer', 'Ingresa un código válido de 6 dígitos.');
+        return;
+      }
+
+      if (pNueva !== pConfirm) {
+        mostrarAlerta('alertRestablecer', 'Las contraseñas no coinciden.');
+        return;
+      }
+
+      const validacion = validarPasswordReglas(pNueva);
+      if (!validacion.valido) {
+        mostrarAlerta('alertRestablecer', validacion.mensaje);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Restableciendo...';
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Restablecer Contraseña</span>';
+
+          if (response.success) {
+            alert(response.message);
+            document.getElementById('formRestablecer').reset();
+            document.getElementById('formSolicitar').reset();
+            mostrarPantalla('viewLogin');
+          } else {
+            mostrarAlerta('alertRestablecer', response.message);
+          }
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>Restablecer Contraseña</span>';
+          mostrarAlerta('alertRestablecer', 'Error en el servidor: ' + err.message);
+        })
+        .restablecerPasswordConCodigo(idRecuperacionTemporal, codigo, pNueva);
+    }
+
+    /**
+     * Renderiza el Dashboard con los datos del estudiante
+     */
+    function cargarDashboard() {
+      if (!estudianteSesion) return;
+
+      document.getElementById('userBadgeName').textContent = estudianteSesion.nombre;
+      document.getElementById('userBadge').style.display = 'flex';
+
+      document.getElementById('dashNombre').textContent = estudianteSesion.nombre;
+      document.getElementById('dashGrado').textContent = estudianteSesion.grado;
+      document.getElementById('dashProyecto').textContent = estudianteSesion.proyecto || 'No asignado';
+
+      // Renderizar notas y calcular promedio ponderado
+      const container = document.getElementById('containerNotas');
+      container.innerHTML = '';
+
+      let sumaPonderada = 0;
+      let sumaPorcentajes = 0;
+
+      estudianteSesion.notas.forEach(n => {
+        const valNum = parseFloat(n.valor);
+        const pNum = parseFloat(n.porcentajeNum) || 0.10;
+
+        sumaPonderada += (valNum * pNum);
+        sumaPorcentajes += pNum;
+
+        // Clase de color para la nota
+        let claseNota = 'baja';
+        if (valNum >= 4.0) claseNota = 'alta';
+        else if (valNum >= 3.0) claseNota = 'media';
+
+        const card = document.createElement('div');
+        card.className = 'nota-card';
+        card.innerHTML = `
+          <div class="nota-card-header">
+            <span class="nota-numero">Nota ${n.numero}</span>
+            <span class="nota-porcentaje">Peso: ${n.porcentaje}</span>
+          </div>
+          <div class="nota-body">
+            <span class="nota-valor ${claseNota}">${valNum.toFixed(1)}</span>
+          </div>
+          <div class="nota-obs">Obs: "${n.observacion}"</div>
+        `;
+        container.appendChild(card);
+      });
+
+      // Calcular promedio ponderado acumulado
+      const promedioFinal = sumaPorcentajes > 0 ? (sumaPonderada / sumaPorcentajes) : 0;
+      document.getElementById('dashPromedio').textContent = promedioFinal.toFixed(2);
+
+      mostrarPantalla('viewDashboard');
+    }
+
+    /**
+     * Cierra la sesión activa
+     */
+    function cerrarSesion() {
+      estudianteSesion = null;
+      document.getElementById('userBadge').style.display = 'none';
+      document.getElementById('formLogin').reset();
+      mostrarPantalla('viewLogin');
+    }
+  </script>
+</body>
+</html>
